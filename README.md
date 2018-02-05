@@ -44,13 +44,14 @@ channel ('eligible') in the frame preceding the one when it reached the
 water slab.
 
 Columns in the output .xvg and the analysis total are as follows:
-1:Time
-2:+Flux
-3:-Flux
-4:Crossings that were bigjumps
-5:Total bigjumps
-6-22:Jumptype discrimination.
-
+```
+1: Time
+2: +Flux
+3: -Flux
+4: Crossings that were bigjumps
+5: Total bigjumps
+6-22: Jumptype discrimination.
+```
 Bigjump signals crossings between non-consecutive regions (namely, directly
 jumping from one water slab to the next in one step). Having a large number of
 these may indicate too large a frame step for the analysis. 300 ps per frame
@@ -61,7 +62,7 @@ The jumptypes code for different events that are recorded. These are numbered
 Each frame the slab and eligibility of each molecule is compared to the previous
 frame's. The jumptypes codes are as per the following matrix (the 'e E n N'
 labels are as per the legend above):
-
+```
          To(new):   
 From:     e   E   n   N    +: stands for a clean crossing;                
 (old) e *16 +15 *14 +13    *: is a crossing that can only happen
@@ -71,6 +72,7 @@ From:     e   E   n   N    +: stands for a clean crossing;
                               (out of internal consistency - it requires
                               a jump so big that it is prevented by the
                               pbc treatment of nojump).
+```
 
 In addition to these, jumptype = 0 means no slab difference, or a membrane-water
 transition back to the last water slab the molecule visited.
@@ -80,5 +82,3 @@ The assignment of `*` and `x` is somewhat arbitrary regarding some exotic jumps
 that will only be of concern when the frame step is so high that the results
 will be rubbish anyway. The bottom line is that one should aim for mostly
 `+` events; too many bigjumps indicate that the step is inappropriate.
-   
-'''
