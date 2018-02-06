@@ -278,15 +278,15 @@ class FluxSystem:
 
                 self.x_dim, self.y_dim, self.z_dim = self.snapshot.dimensions[:3]
                 if opts.toroidal:
-                    self.channel_cog = self.topring_atgr.centerOfGeometry()
+                    self.channel_cog = self.topring_atgr.center_of_geometry()
                     if not opts.tor_scale:
                         self.rel_membrane_top = opts.toroidal/(2*self.z_dim)
                         self.rel_membrane_bot = -self.rel_membrane_top 
                 else:
-                    self.channel_cog = (self.topring_atgr.centerOfGeometry()+self.botring_atgr.centerOfGeometry())/2
+                    self.channel_cog = (self.topring_atgr.center_of_geometry()+self.botring_atgr.center_of_geometry())/2
                     # xy-plane radius of gyration; not mass weighted
-                    self.cutoffsq = opts.radius_multsq * self.ringatms_inv * numpy.sum(numpy.power((self.bothrings_atgr.coordinates()-self.channel_cog)*[1,1,0], 2))
-                    self.rel_membrane_top = (self.topring_atgr.centerOfGeometry()[2]-self.channel_cog[2])/self.z_dim
+                    self.cutoffsq = opts.radius_multsq * self.ringatms_inv * numpy.sum(numpy.power((self.bothrings_atgr.positions-self.channel_cog)*[1,1,0], 2))
+                    self.rel_membrane_top = (self.topring_atgr.center_of_geometry()[2]-self.channel_cog[2])/self.z_dim
                     self.rel_membrane_bot = -self.rel_membrane_top 
 
                 if not self.waters:
@@ -325,7 +325,7 @@ class WaterCollection:
 
     def __init__(self):
         try:
-            self.water_atms = flx_syst.syst.selectAtoms("name %s"% opts.watername)
+            self.water_atms = flx_syst.syst.select_atoms("name %s"% opts.watername)
         except MDAnalysis.NoDataError:
             sys.exit('Error: No atoms found with name \'%s\'.' % opts.watername)
         nwaters = len(self.water_atms)
@@ -355,18 +355,18 @@ class WaterCollection:
 
     def update_flux(self):
         # bring in the centered coordinates
-        self.coords = self.water_atms.coordinates() - flx_syst.channel_cog
+        self.coords = self.water_atms.positions - flx_syst.channel_cog
 
         # set the slab and waterslab
         rx = self.coords[:,2]/flx_syst.z_dim
         mdf = numpy.modf(rx)
         self.inmembrane.update(numpy.abs(mdf[0]-numpy.round(mdf[0])) < flx_syst.rel_membrane_top, self.initialize)
-        self.slab.update((numpy.round(rx)*2*self.inmembrane.new + (mdf[1]*2+numpy.sign(rx))*(-self.inmembrane.new)).astype(numpy.int), self.initialize)
+        self.slab.update((numpy.round(rx)*2*self.inmembrane.new + (mdf[1]*2+numpy.sign(rx))*(~self.inmembrane.new)).astype(numpy.int), self.initialize)
         slabdiff = self.slab.new-self.slab.old
         bigjump = numpy.abs(slabdiff) > 1
-        wslab_updt0 = -bigjump * self.inmembrane.new
+        wslab_updt0 = ~bigjump * self.inmembrane.new
         wslab_updt1 = bigjump * self.inmembrane.new
-        self.waterslab.update(self.waterslab.new*wslab_updt0 + self.slab.new*(-self.inmembrane.new) + (self.slab.new-numpy.sign(slabdiff))*wslab_updt1, self.initialize)
+        self.waterslab.update(self.waterslab.new*wslab_updt0 + self.slab.new*(~self.inmembrane.new) + (self.slab.new-numpy.sign(slabdiff))*wslab_updt1, self.initialize)
         wslabdiff = self.waterslab.new - self.waterslab.old
 
         # set eligibility
