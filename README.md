@@ -1,7 +1,11 @@
 # fluxer
 A script for counting crossing events across a finite width xy-plane membrane.
 
-The system is assumed periodic in z but the pbc in the trajectory must have been
+(fluxer depends on [mdreader](https://github.com/mnmelo/mdreader) being in
+your `$PYTHONPATH`. The version in the `oldver` branch has no such requirement,
+but future development will focus on the `master` branch version).
+
+The system is assumed periodic in *z* but the pbc in the trajectory must have been
 removed (trjconv option -pbc nojump).
 Two index groups define the top and bottom of the membrane. A crossing is only
 counted when an atom exits on the opposite side of the membrane to the one it
