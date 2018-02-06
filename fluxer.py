@@ -362,7 +362,7 @@ if __name__ == "__main__":
                      'the output .xvg files. Set to disable header inclusion.')
     syst.add_ndx(ndxparms=['Top group (or whole membrane if using -toroidal)',
                            'Bottom group (ignored if using -toroidal)'])
-    syst.setargs(o='flux.xvg')
+    syst.setargs(o='flux.xvg', np=None)
 
     #mdreader.check_outfile(syst.opts.outfile) # already done by default
     mdreader.check_outfile(syst.opts.cumfile)
